@@ -223,6 +223,7 @@ sb.auth.onAuthStateChange((event, session) => {
   route();
 });
 window.addEventListener('hashchange', route);
+route(); // ponytail: don't gate first paint on the auth check, the listener re-routes once it resolves
 </script>
 </body>
 </html>
