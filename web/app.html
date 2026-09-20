@@ -225,5 +225,24 @@ sb.auth.onAuthStateChange((event, session) => {
 window.addEventListener('hashchange', route);
 route(); // ponytail: don't gate first paint on the auth check, the listener re-routes once it resolves
 </script>
+<script src="/onboarding.js"></script>
+<script>
+    // First-run onboarding. Signed-out newcomers only, once per browser.
+    Onboarding.start({
+        key: "costanza",
+        finishLabel: "Get started",
+        slides: [
+                { title: "Poems, no ceremony",
+                  body: "Write something short and put it up. No formatting fuss, no submission queue.",
+                  art: "<svg width=\"120\" height=\"120\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M16 3.5 20.5 8 8 20.5 3 21l.5-5z\"/></svg>" },
+                { title: "Read the network",
+                  body: "Follow poets you like and their new work lands in your feed instead of an inbox.",
+                  art: "<svg width=\"120\" height=\"120\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z\"/><path d=\"M4 19a2 2 0 0 1 2-2h13\"/></svg>" },
+                { title: "Keep the good ones",
+                  body: "Save what moves you and build a shelf worth going back to.",
+                  art: "<svg width=\"120\" height=\"120\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m12 3 2.7 5.6 6.3.9-4.5 4.4 1 6.1-5.5-2.9L6.5 20l1-6.1L3 9.5l6.3-.9z\"/></svg>" }
+        ]
+    });
+</script>
 </body>
 </html>
