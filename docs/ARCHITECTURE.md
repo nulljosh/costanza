@@ -1,6 +1,8 @@
 # Architecture
 
-Poetry network. One Postgres table, no ranking, pure Supabase row-level security. Web app is a single HTML file; iOS, macOS, watchOS, and Kotlin Multiplatform clients share the same PostgREST API and anon key. No backend routing required.
+Costanza is a place to post poems and read other people's. There is no algorithm sorting anything and no scores. Poems sit in one list in the order they were written.
+
+Everything lives in a single database table, and the database itself decides who is allowed to read or change each row, so there is no server code in between. The website is one HTML file. The iPhone, Mac, Watch, Android, and desktop apps all talk to that same database directly.
 
 ## How it runs
 
