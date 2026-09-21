@@ -12,6 +12,12 @@ A poetry network with no likes, no ranking, no follower count. Sign in, pick a n
 
 v1 adds following and a quiet way to say "I read this". The business is a small yearly fee for a custom domain on your author page.
 
+<img src="progress.svg" width="460">
+
+## Architecture
+
+<img src="architecture.svg" width="600">
+
 ## Features
 
 - Write, read, delete your own. Blank line between stanzas, single newlines kept
