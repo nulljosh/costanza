@@ -1,14 +1,17 @@
 /* Shared first-run onboarding. Copy this file verbatim into any app that needs it.
-   Usage, after the app knows its auth state:
+   Usage, at page load:
 
      Onboarding.start({
        key: 'sparkjar',                 // localStorage namespace, one per app
        signedIn: isLoggedIn(),          // omit to auto-detect a stored session
        slides: [{ title, body, art }],  // art is an inline SVG string, optional
-       onDone: () => openSignup()       // optional, fires on finish (not skip)
+       onDone: () => {}                 // optional, fires on finish (not skip)
      });
 
-   Shows once per browser. Set localStorage['<key>_onboarded'] = '' to replay. */
+   Shows once, right after the user registers: never to signed-out visitors, and
+   never to an account that already existed when this page loaded. Waits on the
+   page for a session to appear, so it fires the moment sign-up completes.
+   Set localStorage['<key>_onboarded'] = '' to replay. */
 (function (global) {
   'use strict';
 
@@ -59,14 +62,52 @@
     return false;
   }
 
+  /* A Supabase session carries user.created_at; an account younger than ten minutes
+     just registered. Anything else answers null (unknown). */
+  function accountIsNew() {
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (!/^sb-.*-auth-token$/.test(k)) continue;
+        var u = JSON.parse(localStorage.getItem(k)).user;
+        if (u && u.created_at) return Date.now() - Date.parse(u.created_at) < 10 * 60 * 1000;
+      }
+    } catch (e) {}
+    return null;
+  }
+
   function start(opts) {
     var slides = (opts && opts.slides) || [];
     var key = (opts && opts.key) || 'app';
     var flag = key + '_onboarded';
-    var signedIn = opts.signedIn;
-    if (signedIn === undefined) signedIn = detectSignedIn(opts.authKeys);
-    if (!slides.length || signedIn) return false;
+    var isIn = function () {
+      return opts.signedIn === undefined ? detectSignedIn(opts.authKeys) : !!opts.signedIn;
+    };
+    if (!slides.length) return false;
     try { if (localStorage.getItem(flag)) return false; } catch (e) { return false; }
+    var signedIn = isIn();
+    if (signedIn && accountIsNew() === false) {
+      // Existed before this page load: stamp and never show.
+      try { localStorage.setItem(flag, '1'); } catch (e) {}
+      return false;
+    }
+    if (!signedIn) {
+      // ponytail: 1s poll for a session appearing in storage; swap for an auth
+      // event hook if an app ever needs it faster. A stored value of
+      // signedIn:false means the host re-calls start() after sign-up instead.
+      if (opts.signedIn === undefined) {
+        var t = setInterval(function () {
+          if (!isIn()) return;
+          clearInterval(t);
+          if (accountIsNew() !== false) show();
+          else try { localStorage.setItem(flag, '1'); } catch (e) {}
+        }, 1000);
+      }
+      return false;
+    }
+    return show();
+
+    function show() {
 
     var i = 0;
     var style = el('style');
@@ -139,6 +180,7 @@
     document.body.appendChild(veil);
     next.focus();
     return true;
+    }
   }
 
   global.Onboarding = { start: start };
