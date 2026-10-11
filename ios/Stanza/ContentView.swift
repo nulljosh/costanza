@@ -134,7 +134,7 @@ final class Store {
     func forgot(email: String) async {
         let body = try! JSONSerialization.data(withJSONObject: ["email": email])
         var r = request("/auth/v1/recover", method: "POST", body: body)
-        r.setValue("https://costanza.heyitsmejosh.com/app#/reset", forHTTPHeaderField: "redirect_to")
+        r.setValue("https://costanza.jaybulb.com/app#/reset", forHTTPHeaderField: "redirect_to")
         _ = try? await URLSession.shared.data(for: r)
         error = "Check your email for a reset link."
     }

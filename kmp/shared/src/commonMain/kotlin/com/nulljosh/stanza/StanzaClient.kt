@@ -58,7 +58,7 @@ class StanzaClient(private val http: HttpClient = defaultClient()) {
 
     /** Sends the reset email; the link opens the web app to set a new password. */
     suspend fun forgot(email: String): String = try {
-        http.post("$URL/auth/v1/recover?redirect_to=https://costanza.heyitsmejosh.com/app%23/reset") { auth(); setBody(mapOf("email" to email)) }
+        http.post("$URL/auth/v1/recover?redirect_to=https://costanza.jaybulb.com/app%23/reset") { auth(); setBody(mapOf("email" to email)) }
         "Check your email for a reset link."
     } catch (e: Exception) { e.message ?: "Failed" }
 
