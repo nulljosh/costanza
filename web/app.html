@@ -6,7 +6,7 @@
 <title>Co-Stanza</title>
 <meta name="description" content="A quiet place to post poems.">
 <link rel="icon" href="icon.svg">
-<link rel="stylesheet" href="https://heyitsmejosh.com/tokens.css">
+<link rel="stylesheet" href="https://jaybulb.com/tokens.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg, #fafafa); color: var(--text, #111); font-family: var(--font-body, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif); line-height: 1.7; -webkit-font-smoothing: antialiased; }
@@ -57,7 +57,7 @@
 import { createClient } from './spark.js';
 import { esc, renderBody, when, slug } from './poem.js';
 
-const sb = createClient('https://api.heyitsmejosh.com');
+const sb = createClient('https://api.jaybulb.com');
 const main = document.getElementById('main');
 const who = document.getElementById('who');
 let user = null;
