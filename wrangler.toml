@@ -2,7 +2,7 @@ name = "costanza"
 compatibility_date = "2025-07-01"
 
 workers_dev = false
-routes = [{ pattern = "costanza.heyitsmejosh.com", custom_domain = true }]
+routes = [{ pattern = "costanza.heyitsmejosh.com", custom_domain = true }, { pattern = "costanza.jaybulb.com", custom_domain = true }]
 
 [assets]
 directory = "web"
