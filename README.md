@@ -4,7 +4,7 @@
 
 ![version](https://img.shields.io/badge/version-1.0.0-111) ![license](https://img.shields.io/badge/license-MIT-111) [![github](https://img.shields.io/badge/github-nulljosh%2Fco--stanza-111)](https://github.com/nulljosh/costanza)
 
-Live at [costanza.heyitsmejosh.com](https://costanza.heyitsmejosh.com).
+Live at [costanza.jaybulb.com](https://costanza.jaybulb.com).
 
 ![screenshot](screenshots/landing.png)
 
