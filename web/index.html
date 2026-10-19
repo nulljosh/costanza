@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Co-Stanza: poems, no pressure</title>
+<meta name="description" content="A poetry network for people who are not, in fact, doing great. No likes, no ranking. Post the poem. Then go take a nap.">
+<meta property="og:title" content="Co-Stanza">
+<meta property="og:description" content="Poems, no pressure.">
+<link rel="icon" href="icon.svg">
+<meta name="theme-color" content="#f5f0e4">
+<link rel="stylesheet" href="https://jaybulb.com/tokens.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg, #fafafa); color: var(--text, #111); font-family: var(--font-body, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  main { max-width: 42rem; margin: 0 auto; padding: 5rem clamp(1rem, 5vw, 3rem) 6rem; }
+  .hero h1 { font-size: clamp(2.4rem, 7vw, 3.6rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.05; margin-bottom: 1rem; }
+  .hero p { font-size: 1.2rem; color: var(--text2, #555); max-width: 34rem; }
+  .cta { display: flex; gap: .75rem; margin: 1.75rem 0 3rem; }
+  .btn { padding: .75rem 1.3rem; border-radius: var(--radius-sm, 8px); background: var(--text, #111); color: var(--bg, #fff); font-weight: 600; }
+  .btn.ghost { background: none; color: inherit; border: 1px solid var(--border2, #ddd); }
+  section { margin-top: 4rem; }
+  h2 { font-size: 1.3rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: .5rem; }
+  section p { color: var(--text2, #555); margin-bottom: 1rem; max-width: 36rem; }
+  footer { margin-top: 5rem; font-size: .85rem; color: var(--text2, #555); display: flex; gap: 1.25rem; }
+</style>
+<link rel="stylesheet" href="devices.css">
+<script>
+// ponytail: UA sniff, good enough for a mockup. iphone is the default. ?embed = app only, for the landing demo frame.
+(function(u,d){d=/Android/.test(u)?'android':/iPhone|iPad/.test(u)?'iphone':/Windows/.test(u)?'windows':/Mac/.test(u)?'mac':'iphone';document.documentElement.dataset.device=d;if(/[?&]embed\b/.test(location.search))document.documentElement.classList.add('embed')})(navigator.userAgent);
+</script>
+<style>
+/* Live demo: the real app in a frame matching the visitor's device (nimble treatment) */
+.demo{margin:2rem auto 0;text-align:center;position:relative;z-index:2}
+.demo .device-screen{aspect-ratio:9/19.5}
+.demo .device-mac .device-screen,.demo .device-windows .device-screen{aspect-ratio:16/10}
+.demo .device-screen iframe{position:absolute;top:0;left:0;border:0;display:block;transform-origin:0 0;width:390px;height:845px;background:#fff}
+.demo .device-mac .device-screen iframe,.demo .device-windows .device-screen iframe{width:1024px;height:640px}
+.demo-caption{font-size:.9rem;opacity:.65;margin:1rem 0 0}
+.embed .demo,.embed footer,.embed nav{display:none!important}
+.rotator{position:relative;height:3.4em;margin-top:1.25rem;max-width:34rem}
+.rotator blockquote{position:absolute;inset:0;font-style:italic;color:var(--text2,#555);opacity:0;transform:translateY(.4em);transition:opacity .6s ease,transform .6s ease}
+.rotator blockquote.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+<main>
+  <div class="hero">
+    <h1>Co-Stanza</h1>
+    <p>A poetry network for people who are not, in fact, doing great. No likes, no ranking, no architect. Post the poem. Then go take a nap.</p>
+    <div class="rotator" id="rotator">
+      <blockquote class="show">you write a poem at midnight<br>in the morning it's still there</blockquote>
+      <blockquote>nobody is counting.<br>that's it. that's the whole product.</blockquote>
+      <blockquote>one poem, one page, no noise.<br>named after a man who was never doing great either.</blockquote>
+    </div>
+    <script>
+    (function(){var qs=document.querySelectorAll('#rotator blockquote'),i=0;
+    if(qs.length<2)return;
+    setInterval(function(){qs[i].classList.remove('show');i=(i+1)%qs.length;qs[i].classList.add('show');},4000);
+    })();
+    </script>
+<div class="demo">
+  <div class="device device-iphone" id="demoFrame" data-title="Co-Stanza"><div class="device-screen"><iframe id="demoApp" title="Co-Stanza, live" loading="lazy" data-src="app.html?embed"></iframe></div></div>
+  <p class="demo-caption">This is the <span id="demoDev">iPhone</span> app, live. Try it.</p>
+</div>
+<script>
+(function(){var names={iphone:'iPhone',android:'Android',mac:'Mac',windows:'Windows'},dev=document.documentElement.dataset.device,f=document.getElementById('demoFrame'),i=document.getElementById('demoApp');
+if(!names[dev])dev='iphone';f.className='device device-'+dev;document.getElementById('demoDev').textContent=names[dev];
+if(!document.documentElement.classList.contains('embed'))i.src=i.dataset.src;
+function fit(){i.style.transform='scale('+(i.parentNode.clientWidth/i.offsetWidth)+')';}fit();addEventListener('resize',fit);})();
+</script>
+
+  </div>
+  <div class="cta"><a class="btn" href="app.html#/write">Write a poem</a><a class="btn ghost" href="app.html">Read</a></div>
+
+  <section>
+    <h2>Every social network wants you to do well</h2>
+    <p>Grow the audience. Hit the numbers. Be somebody. A poem does not care about any of that. It just wants to be left alone on a page. That's the gap.</p>
+  </section>
+  <section>
+    <h2>What Co-Stanza does</h2>
+    <p>You sign in, pick a name, and publish. Each poem gets its own page. Your name gets a page with all of them. The front page is everyone's, newest first. Nobody is counting. That's it. That's the whole product.</p>
+  </section>
+  <section>
+    <h2>Do the opposite</h2>
+    <p>Every instinct says post more, post louder, post for the algorithm. If every instinct you have is wrong, then the opposite would have to be right. So: one poem, one page, no noise.</p>
+  </section>
+  <section>
+    <h2>Everywhere</h2>
+    <p>Web, iPhone, iPad, Mac, Android, Windows and Linux. Same poems, same account.</p>
+  </section>
+  <footer><a href="https://github.com/nulljosh/costanza">Source</a><a href="app.html">Open the app</a> &middot; <a href="https://jaybulb.com/docs.html#costanza">Docs</a></footer>
+</main>
+</body>
+</html>

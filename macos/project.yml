@@ -1,0 +1,49 @@
+name: Stanza
+options:
+  bundleIdPrefix: com.heyitsmejosh
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "16.0"
+  developmentLanguage: en
+packages:
+  Supabase:
+    url: https://github.com/supabase-community/supabase-swift
+    from: 2.0.0
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "202609091200"
+targets:
+  Stanza:
+    type: application
+    platform: macOS
+    sources:
+      # Shared with iOS. Do not fork these files.
+      - path: ../ios/Stanza/ContentView.swift
+      - path: ../ios/Stanza/StanzaApp.swift
+      - path: ../ios/Stanza/KeychainHelper.swift
+      - path: Assets.xcassets
+        buildPhase: resources
+    dependencies:
+      - package: Supabase
+        product: Supabase
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.heyitsmejosh.stanza
+        INFOPLIST_FILE: Stanza/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        DEVELOPMENT_TEAM: QMM486NPYC
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: Stanza.entitlements
+schemes:
+  Stanza:
+    build:
+      targets:
+        Stanza: all
+    run:
+      config: Debug
+    archive:
+      config: Release
+    shared: true

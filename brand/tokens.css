@@ -1,0 +1,7 @@
+/* Costanza brand tokens. The accent is the only colour this app owns; spacing, radii and type come from the shared system. */
+:root {
+  --accent: #d12a5c;
+  --accent-light: #ff6f91;
+  --accent-deep: #d12a5c;
+  --accent-ring: color-mix(in srgb, #d12a5c 30%, transparent);
+}

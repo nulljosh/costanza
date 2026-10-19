@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Co-Stanza</title>
+<meta name="description" content="A quiet place to post poems.">
+<link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="https://jaybulb.com/tokens.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg, #fafafa); color: var(--text, #111); font-family: var(--font-body, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  button, input, textarea { font: inherit; color: inherit; }
+  button { background: none; border: 0; cursor: pointer; }
+  header { display: flex; justify-content: space-between; align-items: baseline; padding: 1.25rem clamp(1rem, 5vw, 3rem); border-bottom: 1px solid var(--border, #eee); }
+  header a.brand { font-weight: 700; letter-spacing: -.02em; }
+  header nav { display: flex; gap: 1.25rem; font-size: .9rem; color: var(--text2, #555); }
+  main { max-width: 38rem; margin: 0 auto; padding: 3rem clamp(1rem, 5vw, 3rem) 6rem; }
+  .poem { padding: 2.5rem 0; border-bottom: 1px solid var(--border, #eee); }
+  .poem h2 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.25; }
+  .poem .by { font-size: .85rem; color: var(--text2, #555); margin: .25rem 0 1.25rem; display: flex; align-items: center; gap: .4rem; }
+  .avatar { border-radius: 4px; display: inline-block; vertical-align: middle; }
+  .profile-head { display: flex; align-items: center; gap: .9rem; margin-bottom: 1.5rem; }
+  .profile-head .avatar { width: 48px; height: 48px; border-radius: 8px; }
+  .poem p { white-space: pre-wrap; margin-bottom: 1.25rem; }
+  .poem p:last-child { margin-bottom: 0; }
+  .single .poem { border: 0; }
+  .single .poem h2 { font-size: 2rem; }
+  .single .poem p { font-size: 1.1rem; }
+  .back { display: inline-block; font-size: .9rem; color: var(--text2, #555); margin-bottom: 1rem; }
+  form { display: grid; gap: .75rem; }
+  input, textarea { width: 100%; padding: .7rem .9rem; border: 1px solid var(--border2, #ddd); border-radius: var(--radius-sm, 8px); background: var(--bg, #fff); }
+  textarea { min-height: 18rem; line-height: 1.7; resize: vertical; }
+  .btn { padding: .7rem 1.2rem; border-radius: var(--radius-sm, 8px); background: var(--text, #111); color: var(--bg, #fff); font-weight: 600; justify-self: start; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .muted { color: var(--text2, #555); font-size: .9rem; }
+  .danger { color: var(--text2, #555); font-size: .8rem; margin-top: 1rem; }
+  .empty { padding: 4rem 0; text-align: center; color: var(--text2, #555); }
+  .err { color: #b00020; font-size: .9rem; }
+  h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: 1.5rem; }
+  .embed header { display: none; }
+</style>
+<script>if(/[?&]embed\b/.test(location.search))document.documentElement.classList.add('embed')</script>
+</head>
+<body>
+<header>
+  <a class="brand" href="#/">Co-Stanza</a>
+  <nav>
+    <a href="#/write">Write</a>
+    <a href="#/account" id="who">Sign in</a>
+  </nav>
+</header>
+<main id="main"><p class="muted">Loading</p></main>
+
+<script type="module">
+import { createClient } from './spark.js';
+import { esc, renderBody, when, slug } from './poem.js';
+
+const sb = createClient('https://api.jaybulb.com');
+const main = document.getElementById('main');
+const who = document.getElementById('who');
+let user = null;
+
+// Deterministic pixel avatar seeded by pen name -- no schema change, no storage,
+// same name always renders the same little icon.
+function avatarSvg(seed) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  const rand = () => { h = (h * 1103515245 + 12345) >>> 0; return h / 4294967296; };
+  const palettes = [['#B5836A', '#7C93A6', '#4A5A68'], ['#7C8B6B', '#A8B99A', '#CBD8BE'], ['#0077b6', '#00b4d8', '#90e0ef'], ['#A5735C', '#D2A88E', '#E3B778'], ['#2d6a4f', '#52b788', '#b7e4c7']];
+  const bgs = ['#111', '#0c1220', '#1a1a1a', '#0f0f1a', '#0a1a0a'];
+  const palette = palettes[Math.floor(rand() * palettes.length)];
+  const bg = bgs[Math.floor(rand() * bgs.length)];
+  const px = 8, size = 8, total = size * px;
+  let rects = '';
+  for (let row = 0; row < size; row++) {
+    for (let col = 0; col < Math.ceil(size / 2); col++) {
+      const ci = rand() > 0.45 ? Math.floor(rand() * 3) : -1;
+      if (ci < 0) continue;
+      const c = palette[ci];
+      rects += `<rect x="${col * px}" y="${row * px}" width="${px}" height="${px}" fill="${c}"/>`;
+      if (col < size - 1 - col) rects += `<rect x="${(size - 1 - col) * px}" y="${row * px}" width="${px}" height="${px}" fill="${c}"/>`;
+    }
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${total} ${total}" width="${total}" height="${total}" shape-rendering="crispEdges"><rect width="${total}" height="${total}" fill="${bg}"/>${rects}</svg>`;
+  return `data:image/svg+xml;base64,${btoa(svg)}`;
+}
+
+const card = (p, single = false) => `
+  <article class="poem">
+    <h2>${single ? esc(p.title) : `<a href="${slug(p.id)}">${esc(p.title)}</a>`}</h2>
+    <div class="by"><img class="avatar" src="${avatarSvg(p.pen_name)}" width="20" height="20" alt=""><a href="#/by/${esc(p.pen_name)}">${esc(p.pen_name)}</a> · ${when(p.created_at)}</div>
+    ${renderBody(p.body)}
+    ${single && user && user.id === p.user_id ? `<button class="danger" data-del="${p.id}">Delete this poem</button>` : ''}
+  </article>`;
+
+const q = () => sb.from('stanza_poems').select('*').order('created_at', { ascending: false });
+
+const views = {
+  async home() {
+    const { data } = await q().limit(50);
+    main.innerHTML = data?.length ? data.map((p) => card(p)).join('') : '<p class="empty">Nothing here yet. Write the first one.</p>';
+  },
+  async by(name) {
+    const { data } = await q().eq('pen_name', name).limit(100);
+    const head = `<div class="profile-head"><img class="avatar" src="${avatarSvg(name)}" width="48" height="48" alt=""><div><h1 style="margin-bottom:.15rem">${esc(name)}</h1><p class="muted">${data?.length || 0} poem${data?.length === 1 ? '' : 's'}</p></div></div>`;
+    main.innerHTML = head + (data?.length ? data.map((p) => card(p)).join('') : '<p class="empty">No poems yet.</p>');
+  },
+  async p(id) {
+    const { data } = await sb.from('stanza_poems').select('*').eq('id', id).single();
+    main.className = 'single';
+    main.innerHTML = data ? `<a class="back" href="#/">Back</a>${card(data, true)}` : '<p class="empty">Not found.</p>';
+  },
+  write() {
+    if (!user) return views.account('Sign in to write.');
+    main.innerHTML = `<h1>Write</h1><form id="f">
+      <input name="pen_name" placeholder="Your name" required maxlength="40" value="${esc(localStorage.pen || '')}">
+      <input name="title" placeholder="Title" required maxlength="120">
+      <textarea name="body" placeholder="The poem. Blank line between stanzas." required maxlength="8000"></textarea>
+      <button class="btn">Publish</button><span class="err" id="e"></span></form>`;
+    document.getElementById('f').onsubmit = async (ev) => {
+      ev.preventDefault();
+      const row = Object.fromEntries(new FormData(ev.target));
+      ev.target.querySelector('.btn').disabled = true;
+      const { data, error } = await sb.from('stanza_poems').insert({ ...row, user_id: user.id }).select().single();
+      if (error) { document.getElementById('e').textContent = error.message; ev.target.querySelector('.btn').disabled = false; return; }
+      localStorage.pen = row.pen_name;
+      location.hash = slug(data.id);
+    };
+  },
+  async account(msg = '') {
+    if (user) {
+      const { data } = await q().eq('user_id', user.id).limit(100);
+      const seed = (localStorage.pen || user.email) + (localStorage.avatarSalt || '');
+      const head = `<div class="profile-head"><img class="avatar" id="myAvatar" src="${avatarSvg(seed)}" width="48" height="48" alt="" title="Click for a new avatar" style="cursor:pointer"><div><h1 style="margin-bottom:.15rem">${esc(localStorage.pen || 'Account')}</h1><p class="muted">${esc(user.email)}</p></div></div>`;
+      main.innerHTML = head + `<p style="margin-top:1rem"><button class="btn" id="out">Sign out</button></p>
+        <h1 style="margin-top:2.5rem">Your poems</h1>` + (data?.length ? data.map((p) => card(p)).join('') : '<p class="empty">Nothing published yet.</p>');
+      document.getElementById('out').onclick = async () => { await sb.auth.signOut(); location.hash = '#/'; };
+      document.getElementById('myAvatar').onclick = () => {
+        localStorage.avatarSalt = Math.random().toString(36).slice(2);
+        views.account();
+      };
+      return;
+    }
+    main.innerHTML = `<h1>Sign in</h1><p class="muted">${esc(msg)}</p><form id="f" style="margin-top:1rem">
+      <input type="email" name="email" placeholder="Email" required autocomplete="email">
+      <input type="password" name="password" placeholder="Password" required minlength="8" autocomplete="current-password">
+      <div style="display:flex;gap:.75rem"><button class="btn" value="in">Sign in</button><button class="btn" value="up" style="background:none;color:inherit;border:1px solid var(--border2,#ddd)">Create account</button></div>
+      <span class="err" id="e"></span>
+      <a class="muted" href="#/forgot">Forgot password?</a></form>`;
+    document.getElementById('f').onsubmit = async (ev) => {
+      ev.preventDefault();
+      const creds = Object.fromEntries(new FormData(ev.target));
+      const up = ev.submitter?.value === 'up';
+      const { error } = up
+        ? await sb.auth.signUp({ ...creds, options: { emailRedirectTo: location.origin + '/app' } })
+        : await sb.auth.signInWithPassword(creds);
+      document.getElementById('e').textContent = error ? error.message : up ? 'Check your email to confirm.' : '';
+      if (!error && !up) location.hash = '#/write';
+    };
+  },
+  forgot() {
+    main.innerHTML = `<h1>Reset password</h1><p class="muted">We email you a link.</p><form id="f" style="margin-top:1rem">
+      <input type="email" name="email" placeholder="Email" required autocomplete="email">
+      <button class="btn">Send link</button><span class="err" id="e"></span></form>`;
+    document.getElementById('f').onsubmit = async (ev) => {
+      ev.preventDefault();
+      const { error } = await sb.auth.resetPasswordForEmail(new FormData(ev.target).get('email'), { redirectTo: location.origin + '/app#/reset' });
+      document.getElementById('e').textContent = error ? error.message : 'Check your email.';
+    };
+  },
+  reset() {
+    main.innerHTML = `<h1>New password</h1><form id="f" style="margin-top:1rem">
+      <input type="password" name="password" placeholder="New password" required minlength="8" autocomplete="new-password">
+      <button class="btn">Save</button><span class="err" id="e"></span></form>`;
+    document.getElementById('f').onsubmit = async (ev) => {
+      ev.preventDefault();
+      const { error } = await sb.auth.updateUser({ password: new FormData(ev.target).get('password') });
+      document.getElementById('e').textContent = error ? error.message : '';
+      if (!error) location.hash = '#/write';
+    };
+  },
+};
+
+async function route() {
+  main.className = '';
+  const [, v = 'home', arg] = location.hash.split('/');
+  const fn = views[v] || views.home;
+  await fn(arg ? decodeURIComponent(arg) : undefined);
+  window.scrollTo(0, 0);
+}
+main.onclick = async (e) => {
+  const id = e.target.dataset?.del;
+  if (!id || !confirm('Delete this poem?')) return;
+  await sb.from('stanza_poems').delete().eq('id', id);
+  location.hash = '#/';
+};
+sb.auth.onAuthStateChange((event, session) => {
+  user = session?.user || null;
+  if (event === 'PASSWORD_RECOVERY') location.hash = '#/reset';
+  who.textContent = user ? (localStorage.pen || user.email) : 'Sign in';
+  route();
+});
+window.addEventListener('hashchange', route);
+route(); // ponytail: don't gate first paint on the auth check, the listener re-routes once it resolves
+</script>
+<script src="/onboarding.js"></script>
+<script>
+    // First-run onboarding. Shows once, right after registration.
+    Onboarding.start({
+        key: "costanza",
+        finishLabel: "Get started",
+        slides: [
+                { title: "Poems, no ceremony",
+                  body: "Write something short and put it up. No formatting fuss, no submission queue.",
+                  art: "<svg width=\"120\" height=\"120\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M16 3.5 20.5 8 8 20.5 3 21l.5-5z\"/></svg>" },
+                { title: "Read the network",
+                  body: "Follow poets you like and their new work lands in your feed instead of an inbox.",
+                  art: "<svg width=\"120\" height=\"120\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z\"/><path d=\"M4 19a2 2 0 0 1 2-2h13\"/></svg>" },
+                { title: "Keep the good ones",
+                  body: "Save what moves you and build a shelf worth going back to.",
+                  art: "<svg width=\"120\" height=\"120\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m12 3 2.7 5.6 6.3.9-4.5 4.4 1 6.1-5.5-2.9L6.5 20l1-6.1L3 9.5l6.3-.9z\"/></svg>" }
+        ]
+    });
+</script>
+</body>
+</html>
