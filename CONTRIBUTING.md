@@ -3,7 +3,7 @@
 ## Setup
 
 ```
-git clone https://github.com/nulljosh/costanza.git
+git clone https://github.com/nulljosh/labs.git
 cd costanza
 npm install
 ```
