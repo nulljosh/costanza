@@ -9,4 +9,4 @@
 - [ ] Custom domains for author pages (the business)
 
 ## Ingested 2026-10-30
-- [ ] Needs Hermes' styling
+- [x] Needs Hermes' styling

@@ -1,0 +1,53 @@
+/* Tripwire design tokens. One source for the landing (brand/tokens.css is the same file).
+   Shared house system: 8 point grid, one radius set, 48 point capsule controls, the system font. Red is the only colour Tripwire owns. */
+:root {
+  /* colour */
+  --accent: #171717;          /* actions and links, AA on white */
+  --btn: #171717;             /* solid buttons, white label */
+  --frame: #171717;           /* the thin frame down the window edges */
+  --band: #171717;            /* full-bleed red sections */
+  --band-sub: #d6d6d6;        /* secondary text on the band, AA */
+  --band-art: #8a8a8a;        /* the diff wall on the band */
+  --band-line: rgba(255, 255, 255, .22);
+  --accent-light: #e07a4f;    /* icon gradient top */
+  --accent-deep: #b5502c;     /* icon gradient bottom */
+  --ring: color-mix(in srgb, var(--accent) 30%, transparent);
+  --bg: #fdfdfd;
+  --surface: #f4f4f4;
+  --line: #e2e2e2;
+  --text: #1a1a1a;
+  --sub: #5d5a5c;
+  --live: #1a7f37;            /* open issue, added field */
+  --bad: #c0392b;             /* removed field */
+
+  /* type */
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --size-display: 64px; --size-title: 34px; --size-headline: 20px; --size-body: 17px; --size-footnote: 13px;
+
+  /* space: the 8 point grid */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px; --sp-9: 96px;
+  --measure: 680px;
+  --wrap: 1120px;
+
+  /* shape */
+  --control: 48px; --r-card: 28px; --r-group: 20px; --r-row: 8px; --r-pill: 999px; --r-sq: 2px; --r-icon: 22.5%;
+  --motion: .2s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent: #f2f2f2;
+    --btn: #3a3a3a;
+    --frame: #3a3a3a;
+    --band: #1c1c1c;
+    --band-sub: #cfcfcf;
+    --band-art: #8a8a8a;
+    --bg: #0b0b0b;
+    --surface: #161616;
+    --line: #2c2c2c;
+    --text: #f5f2f3;
+    --sub: #b1a6a9;
+    --live: #4caf6e;
+    --bad: #ff6b6b;
+  }
+}
