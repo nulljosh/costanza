@@ -7,3 +7,6 @@
 - [ ] TUI feed reader (thin fetch, like wordroot's)
 - [ ] ASC record + first submit
 - [ ] Custom domains for author pages (the business)
+
+## Ingested 2026-10-30
+- [ ] Needs Hermes' styling
