@@ -39,6 +39,8 @@
   .btn:disabled { opacity: .5; cursor: default; }
   .muted { color: var(--text2, #555); font-size: .9rem; }
   .danger { color: var(--text2, #555); font-size: .8rem; margin-top: 1rem; }
+  #kudos { margin-top: 1.5rem; }
+  .kudos-btn[aria-pressed="true"] { background: none; color: inherit; border: 1px solid var(--border2, #ddd); }
   .owner-actions { display: flex; gap: .75rem; align-items: center; margin-top: 1rem; }
   .owner-actions .danger { margin-top: 0; }
   .empty { padding: 4rem 0; text-align: center; color: var(--text2, #555); }
@@ -102,6 +104,28 @@ const card = (p, single = false) => `
 
 const q = () => sb.from('stanza_poems').select('*').order('created_at', { ascending: false });
 
+// Kudos: a reader gives one and can take it back. Only the author sees how many; nobody sees a number on anyone else's poem.
+async function kudos(p) {
+  const box = document.getElementById('kudos');
+  if (!box) return;
+  if (!user) { box.innerHTML = '<p class="muted"><a href="#/account">Sign in</a> to give kudos.</p>'; return; }
+  if (user.id === p.user_id) {
+    const { data } = await sb.rpc('stanza_kudos_count', { poem_id: p.id });
+    const n = data?.count ?? 0;
+    box.innerHTML = `<p class="muted">${n} kudos ${n === 1 ? 'from a reader' : 'from readers'}, seen only by you.</p>`;
+    return;
+  }
+  const { data } = await sb.from('stanza_kudos').select('poem_id').eq('poem_id', p.id);
+  const given = !!data?.length;
+  box.innerHTML = `<button class="btn kudos-btn" aria-pressed="${given}">${given ? 'Kudos given' : 'Give kudos'}</button>`;
+  box.querySelector('button').onclick = async (e) => {
+    e.target.disabled = true;
+    if (given) await sb.from('stanza_kudos').delete().eq('poem_id', p.id);
+    else await sb.from('stanza_kudos').insert({ poem_id: p.id });
+    kudos(p);
+  };
+}
+
 const views = {
   async home() {
     const { data } = await q().limit(50);
@@ -115,7 +139,8 @@ const views = {
   async p(id) {
     const { data } = await sb.from('stanza_poems').select('*').eq('id', id).single();
     main.className = 'single';
-    main.innerHTML = data ? `<a class="back" href="#/">Back</a>${card(data, true)}` : '<p class="empty">Not found.</p>';
+    main.innerHTML = data ? `<a class="back" href="#/">Back</a>${card(data, true)}<div id="kudos"></div>` : '<p class="empty">Not found.</p>';
+    if (data) kudos(data);
   },
   // #/write is a new poem; #/write/<id> edits one of yours in place (same id, same link).
   async write(id) {
