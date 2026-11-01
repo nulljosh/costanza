@@ -1,6 +1,5 @@
 <img src="icon.svg" width="80" alt="">
 
-
 ![version](https://img.shields.io/badge/version-1.0.0-111) ![license](https://img.shields.io/badge/license-MIT-111)
 
 Live at [costanza.jaybulb.com](https://costanza.jaybulb.com).
