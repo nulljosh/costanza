@@ -1,6 +1,6 @@
 # Costanza brand kit and design system
 
-poem lines
+A lyre: poems are lyrics
 
 ## The mark
 One bold flat white glyph on an accent gradient tile. No text, no outline, no emblem.

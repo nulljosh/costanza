@@ -1,8 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<rect width="64" height="64" rx="14" fill="#171717"/>
-<g fill="none" stroke="#fafafa" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-<path d="M14 26c0-6 4-11 9-11h18c5 0 9 5 9 11" /><path d="M12 26h40" /><path d="M50 22c4-1 8 1 9 4" />
-<path d="M18 30c0 12 6 20 14 20s14-8 14-20" fill="#171717"/>
-<circle cx="25" cy="34" r="4"/><circle cx="39" cy="34" r="4"/><path d="M29 34h6"/><path d="M21 34h-3M43 34h3"/>
-<path d="M25 44c3 3 11 3 14 0"/>
-</g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 1024 1024"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6f91"/><stop offset="1" stop-color="#d12a5c"/></linearGradient></defs><rect width="1024" height="1024" rx="224" fill="url(#g)"/><g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"><path stroke-width="60" d="M420 792C312 720 286 560 340 440C372 368 342 300 282 262M604 792C712 720 738 560 684 440C652 368 682 300 742 262"/><path stroke-width="60" d="M378 792H646M330 372H694"/><path stroke-width="36" d="M452 372V792M512 372V792M572 372V792"/></g></svg>
