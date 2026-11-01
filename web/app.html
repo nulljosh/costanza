@@ -36,6 +36,8 @@
   .btn:disabled { opacity: .5; cursor: default; }
   .muted { color: var(--text2, #555); font-size: .9rem; }
   .danger { color: var(--text2, #555); font-size: .8rem; margin-top: 1rem; }
+  .owner-actions { display: flex; gap: .75rem; align-items: center; margin-top: 1rem; }
+  .owner-actions .danger { margin-top: 0; }
   .empty { padding: 4rem 0; text-align: center; color: var(--text2, #555); }
   .err { color: #b00020; font-size: .9rem; }
   h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: 1.5rem; }
@@ -92,7 +94,7 @@ const card = (p, single = false) => `
     <h2>${single ? esc(p.title) : `<a href="${slug(p.id)}">${esc(p.title)}</a>`}</h2>
     <div class="by"><img class="avatar" src="${avatarSvg(p.pen_name)}" width="20" height="20" alt=""><a href="#/by/${esc(p.pen_name)}">${esc(p.pen_name)}</a> · ${when(p.created_at)}</div>
     ${renderBody(p.body)}
-    ${single && user && user.id === p.user_id ? `<button class="danger" data-del="${p.id}">Delete this poem</button>` : ''}
+    ${single && user && user.id === p.user_id ? `<p class="owner-actions"><a class="btn" href="#/write/${encodeURIComponent(p.id)}">Edit</a> <button class="danger" data-del="${p.id}">Delete this poem</button></p>` : ''}
   </article>`;
 
 const q = () => sb.from('stanza_poems').select('*').order('created_at', { ascending: false });
@@ -112,18 +114,26 @@ const views = {
     main.className = 'single';
     main.innerHTML = data ? `<a class="back" href="#/">Back</a>${card(data, true)}` : '<p class="empty">Not found.</p>';
   },
-  write() {
+  // #/write is a new poem; #/write/<id> edits one of yours in place (same id, same link).
+  async write(id) {
     if (!user) return views.account('Sign in to write.');
-    main.innerHTML = `<h1>Write</h1><form id="f">
-      <input name="pen_name" placeholder="Your name" required maxlength="40" value="${esc(localStorage.pen || '')}">
-      <input name="title" placeholder="Title" required maxlength="120">
-      <textarea name="body" placeholder="The poem. Blank line between stanzas." required maxlength="8000"></textarea>
-      <button class="btn">Publish</button><span class="err" id="e"></span></form>`;
+    let old = null;
+    if (id) {
+      ({ data: old } = await sb.from('stanza_poems').select('*').eq('id', id).single());
+      if (!old || old.user_id !== user.id) { main.innerHTML = '<p class="empty">You can only edit your own poems.</p>'; return; }
+    }
+    main.innerHTML = `<h1>${old ? 'Edit' : 'Write'}</h1><form id="f">
+      <input name="pen_name" placeholder="Your name" required maxlength="40" value="${esc(old ? old.pen_name : localStorage.pen || '')}">
+      <input name="title" placeholder="Title" required maxlength="120" value="${esc(old?.title || '')}">
+      <textarea name="body" placeholder="The poem. Blank line between stanzas." required maxlength="8000">${esc(old?.body || '')}</textarea>
+      <button class="btn">${old ? 'Save' : 'Publish'}</button><span class="err" id="e"></span></form>`;
     document.getElementById('f').onsubmit = async (ev) => {
       ev.preventDefault();
       const row = Object.fromEntries(new FormData(ev.target));
       ev.target.querySelector('.btn').disabled = true;
-      const { data, error } = await sb.from('stanza_poems').insert({ ...row, user_id: user.id }).select().single();
+      const { data, error } = old
+        ? await sb.from('stanza_poems').update(row).eq('id', old.id).select().single()
+        : await sb.from('stanza_poems').insert({ ...row, user_id: user.id }).select().single();
       if (error) { document.getElementById('e').textContent = error.message; ev.target.querySelector('.btn').disabled = false; return; }
       localStorage.pen = row.pen_name;
       location.hash = slug(data.id);
