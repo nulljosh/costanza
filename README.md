@@ -1,8 +1,7 @@
 <img src="icon.svg" width="80" alt="">
 
-# Co-Stanza
 
-![version](https://img.shields.io/badge/version-1.0.0-111) ![license](https://img.shields.io/badge/license-MIT-111) [![github](https://img.shields.io/badge/github-nulljosh%2Fco--stanza-111)](https://github.com/nulljosh/labs/tree/main/costanza)
+![version](https://img.shields.io/badge/version-1.0.0-111) ![license](https://img.shields.io/badge/license-MIT-111)
 
 Live at [costanza.jaybulb.com](https://costanza.jaybulb.com).
 
