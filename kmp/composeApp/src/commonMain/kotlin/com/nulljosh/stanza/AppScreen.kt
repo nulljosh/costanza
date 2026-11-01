@@ -1,6 +1,7 @@
 package com.nulljosh.stanza
 
 import androidx.compose.foundation.layout.*
+import com.russhwolf.settings.Settings
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -18,7 +19,9 @@ fun StanzaTheme(content: @Composable () -> Unit) = MaterialTheme(colorScheme = l
 
 private enum class Screen { Feed, Poem, Write, Account }
 
-// ponytail: session is in-memory; sign in again after relaunch. Persist via multiplatform-settings if asked.
+// The refresh token lives in multiplatform-settings (SharedPreferences on Android, java.util.prefs on desktop),
+// so a relaunch signs back in on its own.
+private const val REFRESH_KEY = "stanza.refresh"
 @Composable
 fun AppScreen(client: StanzaClient = remember { StanzaClient() }) {
     val scope = rememberCoroutineScope()
@@ -26,7 +29,12 @@ fun AppScreen(client: StanzaClient = remember { StanzaClient() }) {
     var screen by remember { mutableStateOf(Screen.Feed) }
     var open by remember { mutableStateOf<Poem?>(null) }
     var signedIn by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { poems = client.feed() }
+    val settings = remember { Settings() }
+    fun saveSession() { client.refreshToken?.let { settings.putString(REFRESH_KEY, it) } ?: settings.remove(REFRESH_KEY) }
+    LaunchedEffect(Unit) {
+        settings.getStringOrNull(REFRESH_KEY)?.let { signedIn = client.resume(it); saveSession() }
+        poems = client.feed()
+    }
 
     Surface(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize().widthIn(max = 640.dp).padding(24.dp)) {
@@ -75,12 +83,12 @@ fun AppScreen(client: StanzaClient = remember { StanzaClient() }) {
                     var pw by remember { mutableStateOf("") }
                     var msg by remember { mutableStateOf("") }
                     Column(Modifier.padding(top = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        if (signedIn) Button({ client.token = null; client.userId = null; signedIn = false; screen = Screen.Feed }) { Text("Sign out") }
+                        if (signedIn) Button({ client.signOut(); saveSession(); signedIn = false; screen = Screen.Feed }) { Text("Sign out") }
                         else {
                             OutlinedTextField(email, { email = it }, label = { Text("Email") }, singleLine = true, modifier = Modifier.fillMaxWidth())
                             OutlinedTextField(pw, { pw = it }, label = { Text("Password") }, singleLine = true, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Button({ scope.launch { msg = client.signIn(email, pw, false) ?: ""; if (client.token != null) { signedIn = true; screen = Screen.Write } } }) { Text("Sign in") }
+                                Button({ scope.launch { msg = client.signIn(email, pw, false) ?: ""; if (client.token != null) { signedIn = true; saveSession(); screen = Screen.Write } } }) { Text("Sign in") }
                                 OutlinedButton({ scope.launch { msg = client.signIn(email, pw, true) ?: "" } }) { Text("Create account") }
                             }
                             TextButton({ scope.launch { msg = client.forgot(email) } }, enabled = email.isNotBlank()) { Text("Forgot password?") }

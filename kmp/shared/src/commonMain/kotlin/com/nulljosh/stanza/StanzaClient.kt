@@ -19,7 +19,7 @@ import kotlinx.serialization.json.Json
 data class Poem(val id: String, val user_id: String, val pen_name: String, val title: String, val body: String, val created_at: String)
 
 @Serializable
-private data class Session(val access_token: String? = null, val user: U? = null, val msg: String? = null, val error_description: String? = null) {
+private data class Session(val access_token: String? = null, val refresh_token: String? = null, val user: U? = null, val msg: String? = null, val error_description: String? = null) {
     @Serializable data class U(val id: String)
 }
 
@@ -27,6 +27,8 @@ private data class Session(val access_token: String? = null, val user: U? = null
 class StanzaClient(private val http: HttpClient = defaultClient()) {
     var token: String? = null
     var userId: String? = null
+    /** Kept on disk by the app so a relaunch stays signed in; Supabase rotates it on every use. */
+    var refreshToken: String? = null
 
     companion object {
         const val URL = "https://tjsxsqlxjmanwvmywwvw.supabase.co"
@@ -52,9 +54,17 @@ class StanzaClient(private val http: HttpClient = defaultClient()) {
     suspend fun signIn(email: String, password: String, signUp: Boolean): String? = try {
         val path = if (signUp) "/auth/v1/signup" else "/auth/v1/token?grant_type=password"
         val s: Session = http.post(URL + path) { auth(); setBody(mapOf("email" to email, "password" to password)) }.body()
-        if (s.access_token != null && s.user != null) { token = s.access_token; userId = s.user.id; null }
+        if (s.access_token != null && s.user != null) { token = s.access_token; userId = s.user.id; refreshToken = s.refresh_token; null }
         else s.error_description ?: s.msg ?: if (signUp) "Check your email to confirm." else "Sign in failed"
     } catch (e: Exception) { e.message }
+
+    /** Trades a saved refresh token for a fresh session. False when it expired or was revoked. */
+    suspend fun resume(refresh: String): Boolean = try {
+        val s: Session = http.post("$URL/auth/v1/token?grant_type=refresh_token") { auth(); setBody(mapOf("refresh_token" to refresh)) }.body()
+        if (s.access_token != null && s.user != null) { token = s.access_token; userId = s.user.id; refreshToken = s.refresh_token; true } else false
+    } catch (e: Exception) { false }
+
+    fun signOut() { token = null; userId = null; refreshToken = null }
 
     /** Sends the reset email; the link opens the web app to set a new password. */
     suspend fun forgot(email: String): String = try {

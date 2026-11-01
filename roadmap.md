@@ -1,7 +1,7 @@
 # Roadmap
 
 - [ ] (11-01: web live, Edit beside Delete on your own poem opens #/write/<id> prefilled and saves in place; jaybulb-api stanza_poems now allows owner updates, id and created_at read-only, smoke test covers author edits and a stranger blocked. Left: iPhone, Mac and Kotlin, which still talk to the old Supabase project; their edit lands with their move to api.jaybulb.com, where the update rule already is) Edit a poem
-- [ ] Persist the native session on Android/desktop (multiplatform-settings)
+- [x] (11-01: refresh token kept in multiplatform-settings, traded for a fresh session on launch; desktop compiles, Android unbuilt here with no SDK) Persist the native session on Android/desktop (multiplatform-settings)
 - [ ] ASC record + first submit
 - [ ] Custom domains for author pages (the business)
 
