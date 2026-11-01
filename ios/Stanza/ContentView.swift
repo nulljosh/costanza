@@ -9,10 +9,14 @@ struct ContentView: View {
     @State private var query = ""
     @State private var scope: Shelf = .all
 
-    enum Shelf: String, CaseIterable, Identifiable { case all = "Everyone", saved = "Saved"; var id: Self { self } }
+    enum Shelf: String, CaseIterable, Identifiable { case all = "Everyone", following = "Following", saved = "Saved"; var id: Self { self } }
 
     private var list: [Poem] {
-        let base = scope == .saved ? store.shown.filter { store.saved.contains($0.id) } : store.shown
+        let base = switch scope {
+        case .all: store.shown
+        case .following: store.shown.filter { store.follows.contains($0.pen_name) }
+        case .saved: store.shown.filter { store.saved.contains($0.id) }
+        }
         let q = query.trimmingCharacters(in: .whitespaces).lowercased()
         guard !q.isEmpty else { return base }
         return base.filter { [$0.title, $0.pen_name, $0.body].contains { $0.lowercased().contains(q) } }
@@ -29,6 +33,7 @@ struct ContentView: View {
                 if list.isEmpty {
                     if !query.isEmpty { ContentUnavailableView.search(text: query) }
                     else if scope == .saved { ContentUnavailableView("Nothing saved", systemImage: "bookmark", description: Text("Save a poem to read it again here.")) }
+                    else if scope == .following { ContentUnavailableView("Nobody followed yet", systemImage: "person.2", description: Text(store.token == nil ? "Sign in, then follow a poet from their page." : "Follow a poet from their page and their new poems land here.")) }
                     else { ContentUnavailableView("Nothing here yet", systemImage: "text.alignleft", description: Text("Write the first one.")) }
                 }
             }
@@ -153,6 +158,7 @@ struct PoemView: View {
                 NavigationLink(value: Route.author(poem.pen_name)) { Byline(poem: poem, size: 24) }
                     .buttonStyle(.plain)
                 Text(poem.body).font(.title3).lineSpacing(8).padding(.top, 20).textSelection(.enabled)
+                KudosRow(poem: poem, store: store).padding(.top, 28)
             }
             .frame(maxWidth: 560, alignment: .leading).padding(24)
             .frame(maxWidth: .infinity)
@@ -183,71 +189,6 @@ struct PoemView: View {
             Button("Delete", role: .destructive) { Task { if await store.delete(poem) { dismiss() } } }
         }
     }
-}
-
-struct AuthorView: View {
-    let name: String
-    var store: Store
-    private var poems: [Poem] { store.shown.filter { $0.pen_name == name } }
-
-    var body: some View {
-        List {
-            Section {
-                HStack(spacing: 16) {
-                    PixelAvatar(seed: name).frame(width: 56, height: 56).clipShape(RoundedRectangle(cornerRadius: 12))
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(name).font(.title2.bold())
-                        Text(poems.count == 1 ? "1 poem" : "\(poems.count) poems").foregroundStyle(.secondary)
-                    }
-                }
-                .padding(.vertical, 8)
-                .listRowSeparator(.hidden)
-            }
-            ForEach(poems) { p in NavigationLink(value: Route.poem(p.id)) { PoemRow(poem: p, byline: false) } }
-        }
-        .listStyle(.plain)
-        .readingColumn()
-        .navigationTitle(name)
-        #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
-        #endif
-    }
-}
-
-/// The same 8 by 8 mirrored pixel face the web draws from a pen name (web/app.html avatarSvg),
-/// down to JavaScript's float rounding in the generator, so a poet looks the same everywhere.
-struct PixelAvatar: View {
-    let seed: String
-    var body: some View {
-        Canvas { ctx, size in
-            var h: UInt32 = 0
-            for u in seed.utf16 { h = h &* 31 &+ UInt32(u) }
-            func rand() -> Double {
-                let d = Double(h) * 1103515245 + 12345 // JS multiplies in doubles; match its rounding
-                h = UInt32(truncatingIfNeeded: Int64(d))
-                return Double(h) / 4294967296
-            }
-            let palettes: [[UInt32]] = [[0xB5836A, 0x7C93A6, 0x4A5A68], [0x7C8B6B, 0xA8B99A, 0xCBD8BE], [0x0077b6, 0x00b4d8, 0x90e0ef], [0xA5735C, 0xD2A88E, 0xE3B778], [0x2d6a4f, 0x52b788, 0xb7e4c7]]
-            let bgs: [UInt32] = [0x111111, 0x0c1220, 0x1a1a1a, 0x0f0f1a, 0x0a1a0a]
-            let palette = palettes[Int(rand() * Double(palettes.count))]
-            let bg = bgs[Int(rand() * Double(bgs.count))]
-            let px = size.width / 8
-            ctx.fill(Path(CGRect(origin: .zero, size: size)), with: .color(Color(hex: bg)))
-            for row in 0..<8 {
-                for col in 0..<4 {
-                    guard rand() > 0.45 else { continue }
-                    let c = Color(hex: palette[Int(rand() * 3)])
-                    ctx.fill(Path(CGRect(x: CGFloat(col) * px, y: CGFloat(row) * px, width: px, height: px)), with: .color(c))
-                    ctx.fill(Path(CGRect(x: CGFloat(7 - col) * px, y: CGFloat(row) * px, width: px, height: px)), with: .color(c))
-                }
-            }
-        }
-        .accessibilityHidden(true)
-    }
-}
-
-extension Color {
-    init(hex: UInt32) { self.init(red: Double(hex >> 16 & 0xff) / 255, green: Double(hex >> 8 & 0xff) / 255, blue: Double(hex & 0xff) / 255) }
 }
 
 struct WriteView: View {

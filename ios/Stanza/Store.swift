@@ -64,6 +64,7 @@ final class Store {
     private func start(_ data: Data) throws {
         let s = try JSONDecoder().decode(Session.self, from: data)
         token = s.access_token; userId = s.user.id
+        Task { await loadFollows() }
         KeychainHelper.save(key: Self.refreshKey, data: Data(s.refresh_token.utf8))
         error = ""
     }
@@ -148,7 +149,7 @@ final class Store {
 
     func signOut() {
         if token != nil { let t = token; Task { var r = URLRequest(url: URL(string: Self.api + "/auth/logout")!); r.httpMethod = "POST"; r.setValue("Bearer \(t ?? "")", forHTTPHeaderField: "Authorization"); _ = try? await URLSession.shared.data(for: r) } }
-        token = nil; userId = nil
+        token = nil; userId = nil; follows = []
         KeychainHelper.delete(key: Self.refreshKey)
         clearBiometricCredentials()
     }
@@ -162,6 +163,49 @@ final class Store {
         poems.removeAll { $0.user_id == userId }
         signOut()
         return true
+    }
+
+    // MARK: Following and kudos (the web's, same tables). Your follow list and your kudos are yours alone;
+    // only a poem's author sees how many kudos it has.
+
+    private(set) var follows: Set<String> = []
+    private struct Followed: Decodable { let pen_name: String }
+
+    func loadFollows() async {
+        guard token != nil, let d = try? await call("GET", "/rest/stanza_follows?select=pen_name", authed: true),
+              let rows = try? JSONDecoder().decode([Followed].self, from: d) else { return }
+        follows = Set(rows.map(\.pen_name))
+    }
+
+    func toggleFollow(_ name: String) async {
+        let on = follows.contains(name)
+        let q = name.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? name
+        do {
+            if on { _ = try await call("DELETE", "/rest/stanza_follows?pen_name=eq.\(q)", authed: true); follows.remove(name) }
+            else { _ = try await call("POST", "/rest/stanza_follows", json: ["pen_name": name], authed: true); follows.insert(name) }
+        } catch { self.error = error.localizedDescription }
+    }
+
+    private struct Kudo: Decodable { let poem_id: String }
+    private struct Count: Decodable { let count: Int }
+
+    /// For a reader: whether they gave this poem kudos. For its author: how many it has.
+    func kudos(for p: Poem) async -> (given: Bool, count: Int?) {
+        guard token != nil else { return (false, nil) }
+        if p.user_id == userId {
+            let d = try? await call("POST", "/rpc/stanza_kudos_count", json: ["poem_id": p.id], authed: true)
+            return (false, d.flatMap { try? JSONDecoder().decode(Count.self, from: $0) }?.count)
+        }
+        let d = try? await call("GET", "/rest/stanza_kudos?select=poem_id&poem_id=eq.\(p.id)", authed: true)
+        return (!(d.flatMap { try? JSONDecoder().decode([Kudo].self, from: $0) } ?? []).isEmpty, nil)
+    }
+
+    func setKudos(_ p: Poem, given: Bool) async -> Bool {
+        do {
+            if given { _ = try await call("POST", "/rest/stanza_kudos", json: ["poem_id": p.id], authed: true) }
+            else { _ = try await call("DELETE", "/rest/stanza_kudos?poem_id=eq.\(p.id)", authed: true) }
+            return true
+        } catch { self.error = error.localizedDescription; return false }
     }
 
     func update(_ p: Poem, pen: String, title: String, body: String) async -> Bool {

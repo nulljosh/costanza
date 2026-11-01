@@ -18,6 +18,7 @@ targets:
       # Shared with iOS. Do not fork these files.
       - path: ../ios/Stanza/ContentView.swift
       - path: ../ios/Stanza/Store.swift
+      - path: ../ios/Stanza/People.swift
       - path: ../ios/Stanza/StanzaApp.swift
       - path: ../ios/Stanza/KeychainHelper.swift
       - path: Assets.xcassets
