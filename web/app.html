@@ -8,6 +8,9 @@
 <link rel="icon" href="icon.svg">
 <link rel="stylesheet" href="https://jaybulb.com/tokens.css">
 <style>
+  /* the shared --text2 is 4.3:1 on the cream paper; a touch darker here so small text reads */
+  @media (prefers-color-scheme: light) { :root { --text2: #6b665e; } }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg, #fafafa); color: var(--text, #111); font-family: var(--font-body, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif); line-height: 1.7; -webkit-font-smoothing: antialiased; }
   a { color: inherit; text-decoration: none; }
@@ -102,7 +105,7 @@ const q = () => sb.from('stanza_poems').select('*').order('created_at', { ascend
 const views = {
   async home() {
     const { data } = await q().limit(50);
-    main.innerHTML = data?.length ? data.map((p) => card(p)).join('') : '<p class="empty">Nothing here yet. Write the first one.</p>';
+    main.innerHTML = '<h1 class="sr">Latest poems</h1>' + (data?.length ? data.map((p) => card(p)).join('') : '<p class="empty">Nothing here yet. Write the first one.</p>');
   },
   async by(name) {
     const { data } = await q().eq('pen_name', name).limit(100);
