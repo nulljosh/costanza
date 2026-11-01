@@ -13,6 +13,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="tokens.css">
 <link rel="stylesheet" href="landing.css">
+<link rel="stylesheet" href="hero.css?v=2">
 <style>
 .stage iframe{display:block;position:relative;width:100%;max-width:420px;margin:0 auto;height:min(78svh,760px);border:0;border-radius:28px;background:#fff}
 .rotator{position:relative;height:3.4em;margin:16px auto 0;max-width:34rem}
@@ -21,6 +22,7 @@
 @media (prefers-reduced-motion:reduce){.rotator blockquote{transition:none}}
 </style>
 <script src="landing.js" defer></script>
+<script src="hero.js?v=2" defer></script>
 </head>
 <body>
 
@@ -38,6 +40,7 @@
 
 <main id="top">
 <section class="hero" id="hero">
+  <div class="hero-bg" aria-hidden="true" inert><div class="pwall" id="pwall"></div></div>
   <div class="wrap center hero-copy">
     <p class="label">Poems, no pressure</p>
     <h1>Post the poem. Then go take a nap.</h1>
@@ -52,13 +55,6 @@
       <a class="btn btn-ghost" href="app.html">Read</a>
     </div>
     <p class="fine">Free. Same poems on every device.</p>
-  </div>
-
-  <div class="demo-wrap reveal" id="demo">
-    <div class="stage">
-      <iframe title="Co-Stanza, live" loading="lazy" src="app.html?embed"></iframe>
-    </div>
-    <p class="demo-hint">That is the real app. Scroll the poems.</p>
   </div>
 </section>
 

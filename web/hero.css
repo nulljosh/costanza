@@ -1,0 +1,19 @@
+/* Hero: Co-Stanza's own feed behind the copy. Poems write themselves in, line by line, blended into the page; parallax in hero.js. */
+.hero { position: relative; isolation: isolate; overflow: hidden; min-height: calc(100svh - 56px); display: grid; align-items: center; padding: var(--sp-8) 0; }
+.hero-copy { position: relative; z-index: 2; }
+.hero::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse 58% 52% at 50% 50%, var(--bg) 52%, transparent 100%); }
+.hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 28%; z-index: 1; pointer-events: none; background: linear-gradient(transparent, var(--bg)); }
+.hero-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; transform: translate3d(0, var(--py, 0), 0); will-change: transform; }
+.pwall { height: 100%; max-width: 1440px; margin: 0 auto; padding: var(--sp-6); display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 236px; gap: var(--sp-5); align-content: center; opacity: .75; }
+.pc { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 20px 24px; overflow: hidden; display: flex; flex-direction: column; gap: 10px; }
+.pc-hd { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--sub); }
+.pc-hd i { width: 20px; height: 20px; border-radius: 5px; background: var(--text); opacity: .85; }
+.pc-hd time { margin-left: auto; font-weight: 500; }
+.pc-title { font-size: 20px; line-height: 25px; font-weight: 700; letter-spacing: -.015em; color: var(--text); }
+.pc-body { font-size: 16px; line-height: 23px; color: var(--text); white-space: pre-line; }
+.pc-body span { animation: pc-in .5s ease both; }
+@keyframes pc-in { from { opacity: 0; } }
+@media (max-width: 900px) { .pwall { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .pwall { grid-template-columns: 1fr; padding: var(--sp-4); grid-auto-rows: 210px; opacity: .5; } .hero::before { background: radial-gradient(ellipse 120% 46% at 50% 50%, var(--bg) 62%, transparent 100%); } }
+@media (max-width: 600px) { .nav { grid-template-columns: auto 1fr; } .nav-brand { grid-column: 1; } .nav-end { grid-column: 2; justify-self: end; } }
+@media (prefers-reduced-motion: reduce) { .pc-body span { animation: none; } }
