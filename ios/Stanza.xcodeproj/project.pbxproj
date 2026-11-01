@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		04596AEB5C1350FE7275CF09 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C2D2CD5E92C71BD5FE5152 /* ContentView.swift */; };
 		1D817D11DB39A11DD84B6F08 /* StanzaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C93861DFFB86ABEE7ECEAB87 /* StanzaApp.swift */; };
-		87E1A9365FD2A7535E233B35 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 2EB0802D1D80BB94FD4AD7F7 /* Supabase */; };
+		2821240CF03EDE70DB6C8D6A /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20471AD136F7225D6B357E8 /* Store.swift */; };
 		B4B3C7B9932AA98185A407D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED541501F8D494E902204A8A /* Assets.xcassets */; };
 		B97398B505F3CA9E03BD70BA /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045CBD4E0A1E7549DCD6527B /* KeychainHelper.swift */; };
 /* End PBXBuildFile section */
@@ -21,18 +21,8 @@
 		CAAD8852AE4BB829AFBFCC60 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E5093E19193FDCFF298E1B58 /* Stanza.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Stanza.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED541501F8D494E902204A8A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F20471AD136F7225D6B357E8 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		707EC94F3B3514667AE420FC /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				87E1A9365FD2A7535E233B35 /* Supabase in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		0BDF4263D25E1EC5FC633B16 /* Products */ = {
@@ -59,6 +49,7 @@
 				CAAD8852AE4BB829AFBFCC60 /* Info.plist */,
 				045CBD4E0A1E7549DCD6527B /* KeychainHelper.swift */,
 				C93861DFFB86ABEE7ECEAB87 /* StanzaApp.swift */,
+				F20471AD136F7225D6B357E8 /* Store.swift */,
 			);
 			path = Stanza;
 			sourceTree = "<group>";
@@ -72,7 +63,6 @@
 			buildPhases = (
 				88F3E474FFE531EA4D164C92 /* Sources */,
 				601A9FB6D541892EFBDB9D40 /* Resources */,
-				707EC94F3B3514667AE420FC /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -80,7 +70,6 @@
 			);
 			name = Stanza;
 			packageProductDependencies = (
-				2EB0802D1D80BB94FD4AD7F7 /* Supabase */,
 			);
 			productName = Stanza;
 			productReference = E5093E19193FDCFF298E1B58 /* Stanza.app */;
@@ -110,9 +99,6 @@
 			);
 			mainGroup = 8A62BBDE323A149B5DC4752D;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-				6E1F28ECA20BA43909C13977 /* XCRemoteSwiftPackageReference "supabase-swift" */,
-			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0BDF4263D25E1EC5FC633B16 /* Products */;
 			projectDirPath = "";
@@ -142,6 +128,7 @@
 				04596AEB5C1350FE7275CF09 /* ContentView.swift in Sources */,
 				B97398B505F3CA9E03BD70BA /* KeychainHelper.swift in Sources */,
 				1D817D11DB39A11DD84B6F08 /* StanzaApp.swift in Sources */,
+				2821240CF03EDE70DB6C8D6A /* Store.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,7 +202,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -279,7 +266,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -333,25 +320,6 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		6E1F28ECA20BA43909C13977 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/supabase-community/supabase-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		2EB0802D1D80BB94FD4AD7F7 /* Supabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 6E1F28ECA20BA43909C13977 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Supabase;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C7727E852674A0F9D8C08FC4 /* Project object */;
 }

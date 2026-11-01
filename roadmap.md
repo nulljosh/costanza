@@ -1,5 +1,22 @@
 # Roadmap
 
-- [ ] (11-01: web live, Edit beside Delete on your own poem opens #/write/<id> prefilled and saves in place; jaybulb-api stanza_poems now allows owner updates, id and created_at read-only, smoke test covers author edits and a stranger blocked. Left: iPhone, Mac and Kotlin, which still talk to the old Supabase project; their edit lands with their move to api.jaybulb.com, where the update rule already is) Edit a poem
-- [ ] ASC record + first submit
+- [ ] Edit a poem on Kotlin (web, iPhone and Mac done 11-01 on jaybulb-api; Kotlin still talks to the old Supabase project)
 - [ ] Custom domains for author pages (the business)
+
+## Mobbin pass (2026-11-01)
+
+Compared against Poetry Foundation, Poetizer, Medium, Glass, Quill and Day One. Native app first, web has most of it.
+
+| Gap | Seen in | Size | Status |
+|---|---|---|---|
+| Feed shows the opening stanza, pen name, avatar and date, not one line | Poetizer, Quill, Medium | S | 1.0 |
+| Author page: every poem by a pen name, from the poem | Poetizer, Medium, Glass | S | 1.0 |
+| Share a poem | Poetry Foundation, Medium | S | 1.0 |
+| Search poems and poets | Medium, Glass, Quill | S | 1.0 |
+| Save poems to read again, on device | Poetry Foundation, Medium | S | 1.0 |
+| Edit and delete your own poem in the app | Quill, Day One | S | 1.0 |
+| Pixel avatar on native, same as web | Glass, Poetizer | S | 1.0 |
+| Follow a pen name and a Following feed (web has it) | Poetizer, Medium, Glass | M | open |
+| Quiet "I read this" on native (web has it) | Medium | M | open |
+| Read a poem aloud with the system voice | Poetry Foundation | M | open |
+| A poem of the day at the top, and a widget | Poem of the Day, Quill | M | open |

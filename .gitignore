@@ -3,3 +3,7 @@ node_modules/
 *.xcodeproj/xcuserdata/
 .build/
 supabase/.temp/
+.asc/artifacts/
+.asc/shots/
+.asc/reports/
+.asc/dd/
