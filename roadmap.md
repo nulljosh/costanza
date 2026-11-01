@@ -4,7 +4,7 @@
 - [x] (11-01: web live. Follow / Following on a poet's page (not your own), a Yours link for signed-in readers, #/yours lists the newest poems from the pen names you follow; jaybulb-api stanza_follows is private to you and cleared with the account; test/stanza.mjs covers it. Native follows their move to api.jaybulb.com) Following and a "yours" feed
 - [ ] (11-01: web live, Edit beside Delete on your own poem opens #/write/<id> prefilled and saves in place; jaybulb-api stanza_poems now allows owner updates, id and created_at read-only, smoke test covers author edits and a stranger blocked. Left: iPhone, Mac and Kotlin, which still talk to the old Supabase project; their edit lands with their move to api.jaybulb.com, where the update rule already is) Edit a poem
 - [ ] Persist the native session on Android/desktop (multiplatform-settings)
-- [ ] TUI feed reader (thin fetch, like wordroot's)
+- [x] (11-01: `swift run costanza-tui` prints the latest ten, `by <pen name>` one poet, `<id>` a poem in full; Foundation only, reads the public poems from api.jaybulb.com) TUI feed reader (thin fetch, like wordroot's)
 - [ ] ASC record + first submit
 - [ ] Custom domains for author pages (the business)
 
