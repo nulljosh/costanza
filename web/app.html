@@ -40,6 +40,7 @@
   .muted { color: var(--text2, #555); font-size: .9rem; }
   .danger { color: var(--text2, #555); font-size: .8rem; margin-top: 1rem; }
   #kudos { margin-top: 1.5rem; }
+  #follow { margin: 1rem 0 1.5rem; }
   .kudos-btn[aria-pressed="true"] { background: none; color: inherit; border: 1px solid var(--border2, #ddd); }
   .owner-actions { display: flex; gap: .75rem; align-items: center; margin-top: 1rem; }
   .owner-actions .danger { margin-top: 0; }
@@ -55,6 +56,7 @@
   <a class="brand" href="#/">Co-Stanza</a>
   <nav>
     <a href="#/write">Write</a>
+    <a href="#/yours" id="yoursLink" hidden>Yours</a>
     <a href="#/account" id="who">Sign in</a>
   </nav>
 </header>
@@ -104,6 +106,22 @@ const card = (p, single = false) => `
 
 const q = () => sb.from('stanza_poems').select('*').order('created_at', { ascending: false });
 
+// Follow a pen name from its page. Your own page has no button.
+async function follow(name, mine) {
+  const box = document.getElementById('follow');
+  if (!box || mine) return;
+  if (!user) { box.innerHTML = '<p class="muted"><a href="#/account">Sign in</a> to follow.</p>'; return; }
+  const { data } = await sb.from('stanza_follows').select('pen_name').eq('pen_name', name);
+  const on = !!data?.length;
+  box.innerHTML = `<button class="btn kudos-btn" aria-pressed="${on}">${on ? 'Following' : 'Follow'}</button>`;
+  box.querySelector('button').onclick = async (e) => {
+    e.target.disabled = true;
+    if (on) await sb.from('stanza_follows').delete().eq('pen_name', name);
+    else await sb.from('stanza_follows').insert({ pen_name: name });
+    follow(name, false);
+  };
+}
+
 // Kudos: a reader gives one and can take it back. Only the author sees how many; nobody sees a number on anyone else's poem.
 async function kudos(p) {
   const box = document.getElementById('kudos');
@@ -134,7 +152,17 @@ const views = {
   async by(name) {
     const { data } = await q().eq('pen_name', name).limit(100);
     const head = `<div class="profile-head"><img class="avatar" src="${avatarSvg(name)}" width="48" height="48" alt=""><div><h1 style="margin-bottom:.15rem">${esc(name)}</h1><p class="muted">${data?.length || 0} poem${data?.length === 1 ? '' : 's'}</p></div></div>`;
-    main.innerHTML = head + (data?.length ? data.map((p) => card(p)).join('') : '<p class="empty">No poems yet.</p>');
+    main.innerHTML = head + '<div id="follow"></div>' + (data?.length ? data.map((p) => card(p)).join('') : '<p class="empty">No poems yet.</p>');
+    follow(name, data?.some((p) => user && p.user_id === user.id));
+  },
+  // Poems from the pen names you follow, newest first. The list of names is yours alone.
+  async yours() {
+    if (!user) return views.account('Sign in to see the poets you follow.');
+    const { data: f } = await sb.from('stanza_follows').select('pen_name');
+    const names = (f || []).map((x) => x.pen_name);
+    if (!names.length) { main.innerHTML = '<h1>Yours</h1><p class="empty">Follow a poet from their page and their new poems land here.</p>'; return; }
+    const { data } = await q().in('pen_name', names).limit(100);
+    main.innerHTML = '<h1>Yours</h1>' + (data?.length ? data.map((p) => card(p)).join('') : '<p class="empty">Nothing new from the poets you follow.</p>');
   },
   async p(id) {
     const { data } = await sb.from('stanza_poems').select('*').eq('id', id).single();
@@ -238,6 +266,7 @@ sb.auth.onAuthStateChange((event, session) => {
   user = session?.user || null;
   if (event === 'PASSWORD_RECOVERY') location.hash = '#/reset';
   who.textContent = user ? (localStorage.pen || user.email) : 'Sign in';
+  document.getElementById('yoursLink').hidden = !user;
   route();
 });
 window.addEventListener('hashchange', route);
