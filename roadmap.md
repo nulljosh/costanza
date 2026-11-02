@@ -1,7 +1,5 @@
 # Roadmap
 
-- [ ] Edit a poem on Kotlin (web, iPhone and Mac done 11-01 on jaybulb-api; Kotlin still talks to the old Supabase project)
-- [ ] Custom domains for author pages (the business)
 
 ## Mobbin pass (2026-11-01)
 
