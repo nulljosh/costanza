@@ -28,6 +28,7 @@ fun AppScreen(client: StanzaClient = remember { StanzaClient() }) {
     var poems by remember { mutableStateOf(listOf<Poem>()) }
     var screen by remember { mutableStateOf(Screen.Feed) }
     var open by remember { mutableStateOf<Poem?>(null) }
+    var editing by remember { mutableStateOf<Poem?>(null) } // set when Write opens on your own poem
     var signedIn by remember { mutableStateOf(false) }
     val settings = remember { Settings() }
     fun saveSession() { client.refreshToken?.let { settings.putString(REFRESH_KEY, it) } ?: settings.remove(REFRESH_KEY) }
@@ -41,7 +42,7 @@ fun AppScreen(client: StanzaClient = remember { StanzaClient() }) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 TextButton({ screen = Screen.Feed }) { Text("Co-Stanza", style = MaterialTheme.typography.titleLarge) }
                 Spacer(Modifier.weight(1f))
-                TextButton({ screen = if (signedIn) Screen.Write else Screen.Account }) { Text("Write") }
+                TextButton({ editing = null; screen = if (signedIn) Screen.Write else Screen.Account }) { Text("Write") }
                 TextButton({ screen = Screen.Account }) { Text(if (signedIn) "Account" else "Sign in") }
             }
             HorizontalDivider()
@@ -62,19 +63,24 @@ fun AppScreen(client: StanzaClient = remember { StanzaClient() }) {
                         Text(p.title, style = MaterialTheme.typography.headlineMedium)
                         Text(p.pen_name, color = MaterialTheme.colorScheme.outline)
                         Text(p.body, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = 16.dp))
+                        if (signedIn && p.user_id == client.userId) OutlinedButton({ editing = p; screen = Screen.Write }, Modifier.padding(top = 24.dp)) { Text("Edit") }
                     }
                 }
                 Screen.Write -> {
-                    var pen by remember { mutableStateOf("") }
-                    var title by remember { mutableStateOf("") }
-                    var body by remember { mutableStateOf("") }
-                    var err by remember { mutableStateOf("") }
+                    val e = editing
+                    var pen by remember(e) { mutableStateOf(e?.pen_name ?: "") }
+                    var title by remember(e) { mutableStateOf(e?.title ?: "") }
+                    var body by remember(e) { mutableStateOf(e?.body ?: "") }
+                    var err by remember(e) { mutableStateOf("") }
                     Column(Modifier.padding(top = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedTextField(pen, { pen = it }, label = { Text("Your name") }, singleLine = true, modifier = Modifier.fillMaxWidth())
                         OutlinedTextField(title, { title = it }, label = { Text("Title") }, singleLine = true, modifier = Modifier.fillMaxWidth())
                         OutlinedTextField(body, { body = it }, label = { Text("The poem") }, modifier = Modifier.fillMaxWidth().height(280.dp))
-                        Button({ scope.launch { client.publish(pen, title, body).onSuccess { poems = listOf(it) + poems; open = it; screen = Screen.Poem }.onFailure { err = it.message ?: "Failed" } } },
-                            enabled = pen.isNotBlank() && title.isNotBlank() && body.isNotBlank()) { Text("Publish") }
+                        Button({ scope.launch {
+                                if (e == null) client.publish(pen, title, body).onSuccess { poems = listOf(it) + poems; open = it; screen = Screen.Poem }.onFailure { err = it.message ?: "Failed" }
+                                else client.update(e.id, pen, title, body).onSuccess { new -> poems = poems.map { if (it.id == new.id) new else it }; open = new; editing = null; screen = Screen.Poem }.onFailure { err = it.message ?: "Failed" }
+                            } },
+                            enabled = pen.isNotBlank() && title.isNotBlank() && body.isNotBlank()) { Text(if (e == null) "Publish" else "Save") }
                         if (err.isNotEmpty()) Text(err, color = MaterialTheme.colorScheme.error)
                     }
                 }

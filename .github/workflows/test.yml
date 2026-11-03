@@ -19,6 +19,17 @@ jobs:
         with: { node-version: 22 }
       - run: node --test test.mjs
 
+  kmp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      # No JDK on the Mac, so this is the only place the Kotlin client and Compose screens compile.
+      - run: ./gradlew --no-daemon :composeApp:compileKotlinDesktop
+        working-directory: kmp
+
   docs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
