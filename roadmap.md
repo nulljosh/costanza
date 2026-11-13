@@ -18,3 +18,9 @@ Compared against Poetry Foundation, Poetizer, Medium, Glass, Quill and Day One. 
 | Quiet "I read this" on native (web has it) | Medium | M | built, ships in 1.1 once 1.0 clears review |
 | Read a poem aloud with the system voice | Poetry Foundation | M | open |
 | A poem of the day at the top, and a widget | Poem of the Day, Quill | M | open |
+
+## Ingested 2026-11-13
+- [ ] Note: "Rejected: Co-stanza, Tocks". Last known (2026-11-08): 4.3(a) plus a 2.1 on iPhone, answered 2026-11-07, waiting on Apple. Could not re-pull today: the asc API is blocked by an unaccepted Apple agreement (see vault blocked-on-joshua.md).
+- [ ] Login looks like shit, buttons etc. Screenshot: ~/Documents/Code/notes/attachments/2026-11-13/co-stanza-1.png (Sign in sheet: Email, Password, Sign in, Create account and Forgot password as plain pink text rows in one grouped list, a Close pill top left, Sign in with Apple under them).
+- [ ] Needs bottom nav with settings etc, not buttons in top left. Screenshot: ~/Documents/Code/notes/attachments/2026-11-13/co-stanza-2.png (feed with account and compose circles in the top corner, search bar at the bottom, a post titled "test" by "test" still live in the feed).
+- [ ] Redesign the brand kit and design system. What's the difference between the two? Make it blue not pink. "All my projects are blue though maybe we should differentiate a bit." Question for Joshua: blue, or a different colour so it stands apart?
