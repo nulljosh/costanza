@@ -23,3 +23,6 @@ Compared against Poetry Foundation, Poetizer, Medium, Glass, Quill and Day One. 
 - [ ] Login looks like shit, buttons etc. Screenshot: ~/Documents/Code/notes/attachments/2026-11-13/co-stanza-1.png (Sign in sheet: Email, Password, Sign in, Create account and Forgot password as plain pink text rows in one grouped list, a Close pill top left, Sign in with Apple under them).
 - [ ] Needs bottom nav with settings etc, not buttons in top left. Screenshot: ~/Documents/Code/notes/attachments/2026-11-13/co-stanza-2.png (feed with account and compose circles in the top corner, search bar at the bottom, a post titled "test" by "test" still live in the feed).
 - [ ] Redesign the brand kit and design system. What's the difference between the two? Make it blue not pink. "All my projects are blue though maybe we should differentiate a bit." Question for Joshua: blue, or a different colour so it stands apart?
+
+## Ingested 2026-11-14
+- [ ] (Note "Harp icon") Co-Stanza and Epiphany both have duplicate harp icons. Make them more unique (`/icon`).
