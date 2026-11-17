@@ -26,3 +26,6 @@ Compared against Poetry Foundation, Poetizer, Medium, Glass, Quill and Day One. 
 
 ## Ingested 2026-11-14
 - [ ] (Note "Harp icon") Co-Stanza and Epiphany both have duplicate harp icons. Make them more unique (`/icon`).
+
+## Ingested 2026-11-16
+- [ ] (Note "Costanza") Needs a better name, without the dash. Remove the pink; make it blue or something.
