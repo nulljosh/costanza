@@ -29,3 +29,9 @@ Compared against Poetry Foundation, Poetizer, Medium, Glass, Quill and Day One. 
 
 ## Ingested 2026-11-16
 - [ ] (Note "Costanza") Needs a better name, without the dash. Remove the pink; make it blue or something.
+
+## Ingested 2026-11-23
+
+- [ ] **Stanza**: What’s the name?
+  - Removed “co”?
+  - Remove the pink lmfao
